@@ -33,12 +33,15 @@ parser.add_argument('--nosave',
                     default=False,
                     action='store_true',
                     help='do not save a record of the run')
+parser.add_argument('--game',
+                    type=str,
+                    default='breakout')
 
 args = parser.parse_args()
 
 ##### Hyper-Parameters #####
 BATCH_SIZE = 32  # size of minibatch
-MEM_SIZE = int(1e6)  # size of replay memory
+MEM_SIZE = int(800000)  # size of replay memory
 TARGET_UPDATE_EVERY = 10000  # in units of minibatch updates
 GAMMA = 0.99  # discount factor
 UPDATE_FREQ = 4  # perform minibatch update once every UPDATE_FREQ
@@ -50,14 +53,15 @@ scheduler = EpsilonScheduler(schedule=[(0, 1), (INIT_MEMORY_SIZE, 1), (2e6, 0.1)
 STORAGE_DEVICES = [
     'cuda:0'
 ]  # list of devices to use for episode storage (need about 10GB for 1 million memories)
-DEVICE = 'cuda:0'  # list of devices for computation
+DEVICE = 'cuda:1'  # list of devices for computation
 EPISODES = int(1e5)  # total training episodes
 NUM_TEST = 20
 TEST_EVERY = 1000  # (episodes)
 PLOT_EVERY = 10  # (episodes)
 SAVE_EVERY = 1000  # (episodes)
 EXPERIMENT_DIR = "experiments"
-GAME = 'breakout'
+#GAME = 'breakout'
+GAME = args.game
 
 if not args.nosave:
     root_dir, weight_dir, video_dir = make_log_dir(EXPERIMENT_DIR, GAME)
@@ -235,6 +239,7 @@ for episode in range(EPISODES):
 
             optimizer.step()
             avg_loss += loss.item()
+            print(num_parameter_updates)
             num_parameter_updates += 1
 
         if num_parameter_updates % TARGET_UPDATE_EVERY == 0:  # reset target to source
@@ -248,6 +253,8 @@ for episode in range(EPISODES):
 
             if active_target_count < K:
                 active_target_count += 1
+
+            print('update target at {}'.format(num_parameter_updates))
 
 
     avg_loss /= frame

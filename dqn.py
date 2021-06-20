@@ -38,11 +38,11 @@ args = parser.parse_args()
 
 ##### Hyper-Parameters #####
 BATCH_SIZE = 32  # size of minibatch
-MEM_SIZE = int(1e6)  # size of replay memory
+MEM_SIZE = int(190000)  # size of replay memory
 TARGET_UPDATE_EVERY = 10000  # in units of minibatch updates
 GAMMA = 0.99  # discount factor
 UPDATE_FREQ = 4  # perform minibatch update once every UPDATE_FREQ
-INIT_MEMORY_SIZE = 200000  # initial size of memory before minibatch updates begin
+INIT_MEMORY_SIZE = 150000  # initial size of memory before minibatch updates begin
 #scheduler = EpsilonScheduler(schedule=[(0, 1),(INIT_MEMORY_SIZE,1),(1e6, 0.1)])
 scheduler = EpsilonScheduler(schedule=[(0, 1), (INIT_MEMORY_SIZE, 1), (2e6, 0.1), (30e6, 0.01)])
 

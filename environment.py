@@ -10,7 +10,8 @@ games = {
     'breakout' : 'BreakoutDeterministic-v4',
     'space invaders' : 'SpaceInvadersDeterministic-v4',
     'pong' : 'PongDeterministic-v4',
-    'centipede' : 'CentipedeDeterministic-v4'
+    'centipede' : 'CentipedeDeterministic-v4',
+    'asterix': 'Asterix-v0',
 }
 
 class Environment:
