@@ -42,8 +42,9 @@ MEM_SIZE = int(1e6)  # size of replay memory
 TARGET_UPDATE_EVERY = 10000  # in units of minibatch updates
 GAMMA = 0.99  # discount factor
 UPDATE_FREQ = 4  # perform minibatch update once every UPDATE_FREQ
-INIT_MEMORY_SIZE = 50000  # initial size of memory before minibatch updates begin
-scheduler = EpsilonScheduler(schedule=[(0, 1),(INIT_MEMORY_SIZE,1),(1e6, 0.1)])
+INIT_MEMORY_SIZE = 200000  # initial size of memory before minibatch updates begin
+#scheduler = EpsilonScheduler(schedule=[(0, 1),(INIT_MEMORY_SIZE,1),(1e6, 0.1)])
+scheduler = EpsilonScheduler(schedule=[(0, 1), (INIT_MEMORY_SIZE, 1), (2e6, 0.1), (30e6, 0.01)])
 
 
 STORAGE_DEVICES = [
@@ -90,10 +91,10 @@ def avg_q_func(q_func_list, state):
     return avg_q_value
 
 ##### Optimizer #####
-optimizer = optim.RMSprop(q_func.parameters(), lr=2.5e-4, alpha=0.95, momentum=0.95, eps=1e-2)
-#optimizer = optim.Adam(
-#    q_func.parameters(), lr=0.0000625,
-#    eps=1.5e-4)  # 0.00001 for breakout, 0.00025 is faster for pong
+#optimizer = optim.RMSprop(q_func.parameters(), lr=2.5e-4, alpha=0.95, momentum=0.95, eps=1e-2)
+optimizer = optim.Adam(
+    q_func.parameters(), lr=0.00001,
+    eps=1.5e-4)  # 0.00001 for breakout, 0.00025 is faster for pong
 
 ##### Loss Function #####
 loss_func = nn.SmoothL1Loss()
@@ -136,7 +137,10 @@ def test(active_target_count, save=False):
 
             #q_values = q_func(state.to(DEVICE))
             # NEW: use average q value
-            q_values = avg_q_func(target_q_func_list[-active_target_count+1:] + [q_func], state.to(DEVICE))
+            if active_target_count > 1:
+                q_values = avg_q_func(target_q_func_list[-active_target_count+1:] + [q_func], state.to(DEVICE))
+            else:
+                q_values = avg_q_func([q_func], state.to(DEVICE))
 
             if np.random.random(
             ) > 0.01:  # small epsilon-greedy, sometimes 0.05
@@ -236,7 +240,7 @@ for episode in range(EPISODES):
             avg_loss += loss.item()
             num_parameter_updates += 1
 
-        if num_parameter_updates % TARGET_UPDATE_EVERY == 0:  # reset target to source
+        if num_parameter_updates % TARGET_UPDATE_EVERY == 0 and scheduler.step_count() % UPDATE_FREQ == 0:  # reset target to source
             #target_q_func.load_state_dict(q_func.state_dict())
             # NEW: Update all target q function with next model
             for idx, target_q_func in enumerate(target_q_func_list):
@@ -271,6 +275,7 @@ for episode in range(EPISODES):
             tf.summary.scalar('Average Loss', avg_loss, step=scheduler.step_count())
             tf.summary.scalar('Average Q', avg_q, step=scheduler.step_count())
             tf.summary.scalar('Active Target Count', active_target_count, step=scheduler.step_count())
+            tf.summary.scalar('Q', q_values.mean().item(), step=scheduler.step_count())
 
     if episode % TEST_EVERY == 0 and episode != 0:
         test_reward = test(active_target_count, save=not args.nosave)

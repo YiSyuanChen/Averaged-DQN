@@ -6,6 +6,15 @@ This repository is an implementation of the DeepMind DQN Algorithm for the OpenA
 ![example](demos/pong/pong.gif)
 ![example](demos/space-invaders/space-invaders.gif)
 
+## Environment
+Please refer to requirements.txt.
+To use atari-py, you need to download the [ROMs.rar](http://www.atarimania.com/rom_collection_archive_atari_2600_roms.html) first, unrar it to get ROMs.zip, and again unzip ROMs.zip to get ROMs folder.
+Next, run 
+`python -m atari_py.import_roms <path to ROMs folder>`
+to setting the ROMs.
+
+You may also follow the original [document](https://github.com/openai/atari-py#roms) of atari-py.
+
 ## Usage
 
 To train the model, run `python dqn.py --weights [pretrained weights]`. Various hyperparameters can be set in `dqn.py`. Good pretrained weights are provided in the weights directory, but you can also train from scratch. Experiments are saved in the `experiments` directory by default.
