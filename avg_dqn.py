@@ -141,7 +141,10 @@ def test(active_target_count, save=False):
 
             #q_values = q_func(state.to(DEVICE))
             # NEW: use average q value
-            q_values = avg_q_func(target_q_func_list[-active_target_count+1:] + [q_func], state.to(DEVICE))
+            if active_target_count > 1:
+                q_values = avg_q_func(target_q_func_list[-active_target_count+1:] + [q_func], state.to(DEVICE))
+            else:
+                q_values = avg_q_func([q_func], state.to(DEVICE))
 
             if np.random.random(
             ) > 0.01:  # small epsilon-greedy, sometimes 0.05
@@ -242,7 +245,7 @@ for episode in range(EPISODES):
             print(num_parameter_updates)
             num_parameter_updates += 1
 
-        if num_parameter_updates % TARGET_UPDATE_EVERY == 0:  # reset target to source
+        if num_parameter_updates % TARGET_UPDATE_EVERY == 0 and scheduler.step_count() % UPDATE_FREQ == 0:  # reset target to source
             #target_q_func.load_state_dict(q_func.state_dict())
             # NEW: Update all target q function with next model
             for idx, target_q_func in enumerate(target_q_func_list):
@@ -279,6 +282,7 @@ for episode in range(EPISODES):
             tf.summary.scalar('Average Loss', avg_loss, step=scheduler.step_count())
             tf.summary.scalar('Average Q', avg_q, step=scheduler.step_count())
             tf.summary.scalar('Active Target Count', active_target_count, step=scheduler.step_count())
+            tf.summary.scalar('Q', q_values.mean().item(), step=scheduler.step_count())
 
     if episode % TEST_EVERY == 0 and episode != 0:
         test_reward = test(active_target_count, save=not args.nosave)

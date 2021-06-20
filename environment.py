@@ -3,9 +3,6 @@ import torch
 import torchvision
 import random
 
-# mean = torch.Tensor([0.1])
-# std = torch.Tensor([0.2])
-
 games = {
     'breakout' : 'BreakoutDeterministic-v4',
     'space invaders' : 'SpaceInvadersDeterministic-v4',
