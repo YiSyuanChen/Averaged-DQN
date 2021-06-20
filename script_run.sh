@@ -5,4 +5,4 @@ export CUDA_VISIBLE_DEVICES=1
 #python dqn.py
 
 ##### Average DQN #####
-python avg_dqn.py
+python dqn.py

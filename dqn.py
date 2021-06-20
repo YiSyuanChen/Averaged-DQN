@@ -42,8 +42,9 @@ MEM_SIZE = int(1e6)  # size of replay memory
 TARGET_UPDATE_EVERY = 10000  # in units of minibatch updates
 GAMMA = 0.99  # discount factor
 UPDATE_FREQ = 4  # perform minibatch update once every UPDATE_FREQ
-INIT_MEMORY_SIZE = 50000  # initial size of memory before minibatch updates begin
-scheduler = EpsilonScheduler(schedule=[(0, 1),(INIT_MEMORY_SIZE,1),(1e6, 0.1)])
+INIT_MEMORY_SIZE = 200000  # initial size of memory before minibatch updates begin
+#scheduler = EpsilonScheduler(schedule=[(0, 1),(INIT_MEMORY_SIZE,1),(1e6, 0.1)])
+scheduler = EpsilonScheduler(schedule=[(0, 1), (INIT_MEMORY_SIZE, 1), (2e6, 0.1), (30e6, 0.01)])
 
 
 STORAGE_DEVICES = [
@@ -76,10 +77,10 @@ target_q_func = Model(env.action_space.n).to(DEVICE)
 target_q_func.load_state_dict(q_func.state_dict())
 
 ##### Optimizer #####
-optimizer = optim.RMSprop(q_func.parameters(), lr=2.5e-4, alpha=0.95, momentum=0.95, eps=1e-2)
-#optimizer = optim.Adam(
-#    q_func.parameters(), lr=0.0000625,
-#    eps=1.5e-4)  # 0.00001 for breakout, 0.00025 is faster for pong
+#optimizer = optim.RMSprop(q_func.parameters(), lr=2.5e-4, alpha=0.95, momentum=0.95, eps=1e-2)
+optimizer = optim.Adam(
+    q_func.parameters(), lr=0.00001,
+    eps=1.5e-4)  # 0.00001 for breakout, 0.00025 is faster for pong
 
 ##### Loss Function #####
 loss_func = nn.SmoothL1Loss()
