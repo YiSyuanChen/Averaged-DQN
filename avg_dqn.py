@@ -275,6 +275,7 @@ for episode in range(EPISODES):
             tf.summary.scalar('Average Loss', avg_loss, step=scheduler.step_count())
             tf.summary.scalar('Average Q', avg_q, step=scheduler.step_count())
             tf.summary.scalar('Active Target Count', active_target_count, step=scheduler.step_count())
+            tf.summary.scalar('Q', q_values.mean().item(), step=scheduler.step_count())
 
     if episode % TEST_EVERY == 0 and episode != 0:
         test_reward = test(active_target_count, save=not args.nosave)
