@@ -5,4 +5,4 @@ export CUDA_VISIBLE_DEVICES=1
 #python dqn.py
 
 ##### Average DQN #####
-python dqn.py
+python avg_dqn.py --game 'asterix'

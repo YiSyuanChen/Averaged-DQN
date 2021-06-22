@@ -33,6 +33,9 @@ parser.add_argument('--nosave',
                     default=False,
                     action='store_true',
                     help='do not save a record of the run')
+parser.add_argument('--game',
+                    type=str,
+                    default='breakout')
 
 args = parser.parse_args()
 
@@ -57,7 +60,8 @@ TEST_EVERY = 1000  # (episodes)
 PLOT_EVERY = 10  # (episodes)
 SAVE_EVERY = 1000  # (episodes)
 EXPERIMENT_DIR = "experiments"
-GAME = 'breakout'
+#GAME = 'breakout'
+GAME = args.game
 
 if not args.nosave:
     root_dir, weight_dir, video_dir = make_log_dir(EXPERIMENT_DIR, GAME)
@@ -205,6 +209,7 @@ for episode in range(EPISODES):
 
         lives = env.ale.lives()  # get lives before action
         next_state, reward, done, info = env.step(action)
+        reward = info['unclipped_reward'] # NOTE: Use unclipped reward 
 
         # hack to make learning faster (count loss of life as end of episode for memory purposes)
         mem.store(state[0, 0], action, reward, done
@@ -251,6 +256,8 @@ for episode in range(EPISODES):
 
             if active_target_count < K:
                 active_target_count += 1
+
+            print('update target at {}'.format(num_parameter_updates))
 
 
     avg_loss /= frame

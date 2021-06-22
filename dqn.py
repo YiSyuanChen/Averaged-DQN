@@ -33,6 +33,9 @@ parser.add_argument('--nosave',
                     default=False,
                     action='store_true',
                     help='do not save a record of the run')
+parser.add_argument('--game',
+                    type=str,
+                    default='breakout')
 
 args = parser.parse_args()
 
@@ -57,7 +60,8 @@ TEST_EVERY = 1000  # (episodes)
 PLOT_EVERY = 10  # (episodes)
 SAVE_EVERY = 1000  # (episodes)
 EXPERIMENT_DIR = "experiments"
-GAME = 'breakout'
+#GAME = 'breakout'
+GAME = args.game
 
 if not args.nosave:
     root_dir, weight_dir, video_dir = make_log_dir(EXPERIMENT_DIR, GAME)
@@ -186,6 +190,7 @@ for episode in range(EPISODES):
 
         lives = env.ale.lives()  # get lives before action
         next_state, reward, done, info = env.step(action)
+        reward = info['unclipped_reward'] # NOTE: Use unclipped reward 
 
         # hack to make learning faster (count loss of life as end of episode for memory purposes)
         mem.store(state[0, 0], action, reward, done
@@ -243,6 +248,7 @@ for episode in range(EPISODES):
             tf.summary.scalar('Average Loss', avg_loss, step=scheduler.step_count())
             tf.summary.scalar('Average Q', avg_q, step=scheduler.step_count())
             tf.summary.scalar('Active Target Count', active_target_count, step=scheduler.step_count())
+            tf.summary.scalar('Q', q_values.mean().item(), step=scheduler.step_count())
 
     if episode % TEST_EVERY == 0 and episode != 0:
         test_reward = test(active_target_count, save=not args.nosave)
