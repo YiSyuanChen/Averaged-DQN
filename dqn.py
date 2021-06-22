@@ -33,6 +33,9 @@ parser.add_argument('--nosave',
                     default=False,
                     action='store_true',
                     help='do not save a record of the run')
+parser.add_argument('--game',
+                    type=str,
+                    default='breakout')
 
 args = parser.parse_args()
 
@@ -57,7 +60,8 @@ TEST_EVERY = 1000  # (episodes)
 PLOT_EVERY = 10  # (episodes)
 SAVE_EVERY = 1000  # (episodes)
 EXPERIMENT_DIR = "experiments"
-GAME = 'breakout'
+#GAME = 'breakout'
+GAME = args.game
 
 if not args.nosave:
     root_dir, weight_dir, video_dir = make_log_dir(EXPERIMENT_DIR, GAME)
@@ -77,7 +81,7 @@ target_q_func = Model(env.action_space.n).to(DEVICE)
 target_q_func.load_state_dict(q_func.state_dict())
 
 ##### Optimizer #####
-optimizer = optim.RMSprop(q_func.parameters(), lr=2.5e-4, alpha=0.95, momentum=0.95, eps=1e-2)
+#optimizer = optim.RMSprop(q_func.parameters(), lr=2.5e-4, alpha=0.95, momentum=0.95, eps=1e-2)
 optimizer = optim.Adam(
     q_func.parameters(), lr=0.00001,
     eps=1.5e-4)  # 0.00001 for breakout, 0.00025 is faster for pong
@@ -186,6 +190,7 @@ for episode in range(EPISODES):
 
         lives = env.ale.lives()  # get lives before action
         next_state, reward, done, info = env.step(action)
+        reward = info['unclipped_reward'] # NOTE: Use unclipped reward 
 
         # hack to make learning faster (count loss of life as end of episode for memory purposes)
         mem.store(state[0, 0], action, reward, done
