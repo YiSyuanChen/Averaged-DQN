@@ -5,10 +5,8 @@ import random
 
 games = {
     'breakout' : 'BreakoutDeterministic-v4',
-    'space invaders' : 'SpaceInvadersDeterministic-v4',
-    'pong' : 'PongDeterministic-v4',
-    'centipede' : 'CentipedeDeterministic-v4',
-    'asterix': 'Asterix-v0',
+    'asterix': 'AsterixDeterministic-v4',
+    'seaquest': 'SeaquestDeterministic-v4',
 }
 
 class Environment:

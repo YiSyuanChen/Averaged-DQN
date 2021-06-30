@@ -17,7 +17,6 @@ import datetime
 import os
 
 from model import Model
-from plotting import VisdomLinePlotter
 from environment import Environment
 from utils import Memory, EpsilonScheduler, make_log_dir, save_gif
 import pdb
@@ -90,12 +89,6 @@ optimizer = optim.Adam(
 loss_func = nn.SmoothL1Loss()
 
 ##### Logger #####
-# for visdom
-plot_title = "{} DQN ({})".format(
-    GAME,
-    datetime.datetime.now().strftime("%d/%m/%y %H:%M"))
-plotter = VisdomLinePlotter(disable=args.nosave)
-
 # for tensorboard
 current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 summary_writer = tf.summary.create_file_writer(os.path.join(root_dir,'logs'))
@@ -190,7 +183,7 @@ for episode in range(EPISODES):
 
         lives = env.ale.lives()  # get lives before action
         next_state, reward, done, info = env.step(action)
-        reward = info['unclipped_reward'] # NOTE: Use unclipped reward 
+        #reward = info['unclipped_reward'] # NOTE: Use unclipped reward 
 
         # hack to make learning faster (count loss of life as end of episode for memory purposes)
         mem.store(state[0, 0], action, reward, done
