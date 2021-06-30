@@ -1,10 +1,7 @@
-# PyTorch Implementation of DeepMind's Human-Level Control through Deep Reinforcement Learning, Minh et al.
+# PyTorch Implementations of DQN / Averaged-DQN
 
-This repository is an implementation of the DeepMind DQN Algorithm for the OpenAI gym ATARI environment from Minh et al.
+This repository contains implementations of [DQN from Minh et al.](https://www.nature.com/articles/nature14236) and [Averaged-DQN from Anschel et al.](https://arxiv.org/abs/1611.01929). The code is developed based on a well-written DQN framework [here](https://github.com/jacobaustin123/pytorch-dqn?fbclid=IwAR1dHI4btERitaWTPjZ0qEw9vknLwZdTK34HL5wjnkYN9uSvxI5E3tuY27k).
 
-![example](demos/breakout/tunneling.gif)
-![example](demos/pong/pong.gif)
-![example](demos/space-invaders/space-invaders.gif)
 
 ## Environment
 Please refer to requirements.txt.
@@ -29,12 +26,10 @@ The details of the DQN implementation make a huge difference on performance. The
 4. Using the Adam optimizer was perfectly fine, instead of RMSProp. See the hyperparameters used in this implementation for reference. Faster learning rates worked better for easy tasks like Pong.
 5. I personally annealed epsilon from 1 to 0.1 in 1 million frames, and then to 0.01 over the next 30 million frames. This worked fine, but other methods anneal to 0.01 much faster.
 
-Here is the metrics plot for a long training run, with orange showing the total average unclipped reward:
-
-![episode-reward](demos/breakout/longer.png)
-
-Here is the clipped reward over time:
-
-![episode-reward](demos/breakout/longer-clipped.png)
+## Results
+Training Reward |  Q Value Estimation
+:-------------------------:|:-------------------------:
+![episode-reward](plots/breakout_training_reward.png) | ![episode-reward](plots/breakout_q_value.png)
+![episode-reward](plots/asterix_training_reward.png) | ![episode-reward](plots/asterix_q_value.png)
 
 
